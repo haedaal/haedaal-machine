@@ -1,4 +1,5 @@
 import React from 'react'
+import ColorDiffusion from './circuit/ColorDiffusion'
 
 function Index() {
   return <h2>Home</h2>
@@ -29,6 +30,10 @@ const pages: Page[] = [
   {
     name: 'Users_Name',
     pagef: Users,
+  },
+  {
+    name: 'Color Diffusion',
+    pagef: ColorDiffusion,
   },
 ]
 
