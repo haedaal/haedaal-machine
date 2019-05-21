@@ -1,0 +1,39 @@
+.program-counter {
+  width: 150px;
+  padding: 10px;
+  border: solid 1px black;
+}
+
+.instruction-memory {
+  position: absolute;
+  left: 200px;
+  top: 0;
+  width: 150px;
+  padding: 10px;
+  border: solid 1px black;
+  .memory-cell {
+    .index {
+    }
+    .value {
+      border-collapse: collapse;
+      position: absolute;
+      padding-left: 10px;
+      left: 35px;
+      width: 70px;
+    }
+  }
+}
+
+.registers {
+  margin-top: 50px;
+  width: 150px;
+  padding: 10px;
+  border: solid 1px black;
+  .register {
+    display: inline-block;
+    width: 100px;
+    margin: 3px;
+    padding: 5px;
+    border: solid 1px blue;
+  }
+}
