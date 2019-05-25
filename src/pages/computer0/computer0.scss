@@ -6,9 +6,9 @@
 
 .instruction-memory {
   position: absolute;
-  left: 200px;
+  left: 230px;
   top: 0;
-  width: 150px;
+  width: 170px;
   padding: 10px;
   border: solid 1px black;
   .memory-cell {
@@ -19,7 +19,7 @@
       position: absolute;
       padding-left: 10px;
       left: 35px;
-      width: 70px;
+      width: 100px;
     }
   }
 }
@@ -31,7 +31,7 @@
   border: solid 1px black;
   .register {
     display: inline-block;
-    width: 100px;
+    width: 120px;
     margin: 3px;
     padding: 5px;
     border: solid 1px blue;
