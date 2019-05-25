@@ -1,7 +1,14 @@
-.program-counter {
-  width: 150px;
+.rowbox1 {
+  width: 160px;
+  margin-top: 10px;
   padding: 10px;
   border: solid 1px black;
+}
+
+.program-counter {
+}
+
+.fetched-instruction {
 }
 
 .instruction-memory {
@@ -25,10 +32,6 @@
 }
 
 .registers {
-  margin-top: 50px;
-  width: 150px;
-  padding: 10px;
-  border: solid 1px black;
   .register {
     display: inline-block;
     width: 120px;

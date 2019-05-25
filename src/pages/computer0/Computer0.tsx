@@ -18,19 +18,26 @@ enum Opcode {
   Mov,
 }
 
+const OpcodeMap = Object.keys(Opcode).slice(Object.keys(Opcode).length / 2)
+
 class Instruction {
-  bits: number
-  constructor(opcode: Opcode, operand1: number, operand2?: number) {
-    if (operand2 === undefined) {
-      this.bits = (opcode << 4) + operand1
+  constructor(
+    public opcode: Opcode,
+    public operand1: number,
+    public operand2?: number,
+  ) {}
+
+  get bits() {
+    if (this.operand2 === undefined) {
+      return (this.opcode << 4) + this.operand1
     } else {
-      this.bits = (opcode << 4) + (operand1 << 2) + operand2
+      return (this.opcode << 4) + (this.operand1 << 2) + this.operand2
     }
   }
 }
 
-function toBin(i: number) {
-  return `${i.toString(2).padStart(8, '0')}`
+function toBin(i: number, digits: number = 8) {
+  return `${i.toString(2).padStart(digits, '0')}`
 }
 
 export default class Computer0 extends Component<{}, Computer0State> {
@@ -43,26 +50,88 @@ export default class Computer0 extends Component<{}, Computer0State> {
     }
 
     this.state.instruction_memory[0] = new Instruction(Opcode.Load, 3)
+    this.state.instruction_memory[1] = new Instruction(Opcode.Mov, 0, 1)
+    this.state.instruction_memory[2] = new Instruction(Opcode.Load, 5)
+    this.state.instruction_memory[3] = new Instruction(Opcode.Add, 0, 1)
+  }
+  reset = () => {
+    this.setState({
+      program_counter: 0,
+    })
+  }
+  next = () => {
+    let fetched = this.state.instruction_memory[this.state.program_counter]
+    switch (fetched.opcode) {
+      case Opcode.Load: {
+        this.state.registers[0] = fetched.operand1
+        break
+      }
+      case Opcode.Mov: {
+        this.state.registers[fetched.operand2!] = this.state.registers[
+          fetched.operand1
+        ]
+        break
+      }
+      case Opcode.Add: {
+        this.state.registers[0] =
+          this.state.registers[fetched.operand1] +
+          this.state.registers[fetched.operand2!]
+        break
+      }
+    }
+    this.setState({
+      ...this.state,
+      program_counter: this.state.program_counter + 1,
+    })
   }
   render() {
+    let { program_counter, instruction_memory, registers } = this.state
+    let fetched = instruction_memory[program_counter]
+    let opcode = OpcodeMap[fetched.opcode]
+    let operand1 = fetched.operand1
+    let operand2 = fetched.operand2
     return (
       <div style={{ position: 'relative' }}>
-        <div className="program-counter">
+        <div id="controller">
+          <button onClick={this.reset}>Reset</button>
+          <button onClick={this.next}>Next</button>
+        </div>
+        <div className="program-counter rowbox1">
           PC : {toBin(this.state.program_counter)}
+        </div>
+        <div className="fetched-instruction rowbox1">
+          <div>Fetched Instruction:</div>
+          {toBin(fetched.bits)}
+        </div>
+        <div className="parsed-instruction rowbox1">
+          <div>Parsed Instruction:</div>
+          <div>
+            {toBin(fetched.opcode, 4)} => {opcode}
+          </div>
+          <div>
+            {operand2 === undefined
+              ? `${toBin(operand1, 4)} => ${operand1}`
+              : `${toBin(operand1, 2)} => ${operand1}`}
+          </div>
+          <div>
+            {operand2 === undefined
+              ? `-`
+              : `${toBin(operand2, 2)} => ${operand2}`}
+          </div>
         </div>
         <div className="instruction-memory">
           Instruction Memory <hr />
           {this.state.instruction_memory.map((m, idx) => (
-            <div className="memory-cell">
+            <div key={idx} className="memory-cell">
               <span className="index">{idx}</span>
               <span className="value">: {toBin(m.bits)}</span>
             </div>
           ))}
         </div>
-        <div className="registers">
+        <div className="registers rowbox1">
           Registers
           {this.state.registers.map((r, idx) => (
-            <div className="register">
+            <div key={idx} className="register">
               R{idx} : {toBin(r)}
             </div>
           ))}
