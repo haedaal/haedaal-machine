@@ -122,7 +122,12 @@ export default class Computer0 extends Component<{}, Computer0State> {
         <div className="instruction-memory">
           Instruction Memory <hr />
           {this.state.instruction_memory.map((m, idx) => (
-            <div key={idx} className="memory-cell">
+            <div
+              key={idx}
+              className={`memory-cell${
+                idx == program_counter ? ' active' : ''
+              }`}
+            >
               <span className="index">{idx}</span>
               <span className="value">: {toBin(m.bits)}</span>
             </div>

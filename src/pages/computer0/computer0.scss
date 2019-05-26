@@ -18,8 +18,13 @@
   width: 170px;
   padding: 10px;
   border: solid 1px black;
+  .active {
+    background: rgb(36, 224, 193);
+  }
   .memory-cell {
-    .index {
+    transition: 0.8s;
+    padding: 2px;
+    index {
     }
     .value {
       border-collapse: collapse;
