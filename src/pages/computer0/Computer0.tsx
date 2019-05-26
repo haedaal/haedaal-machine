@@ -7,15 +7,64 @@ interface Computer0State {
   registers: number[]
 }
 
+function next(state: Computer0State): Computer0State {
+  let { program_counter, instruction_memory, registers } = state
+  let fetched = instruction_memory[program_counter]
+  switch (fetched.opcode) {
+    case Opcode.Load: {
+      registers[0] = fetched.operand1
+      break
+    }
+    case Opcode.Mov: {
+      registers[fetched.operand2!] = registers[fetched.operand1]
+      break
+    }
+    case Opcode.Add: {
+      registers[0] = registers[fetched.operand1] + registers[fetched.operand2!]
+      break
+    }
+    case Opcode.Gt: {
+      registers[0] =
+        registers[fetched.operand1] > registers[fetched.operand2!] ? 0 : 1
+      break
+    }
+    case Opcode.Jz: {
+      if (registers[0] == 0) {
+        program_counter += fetched.operand1
+      }
+      break
+    }
+    case Opcode.JumpBack: {
+      program_counter -= fetched.operand1
+      break
+    }
+    case Opcode.Halt: {
+      alert(`program halted with r0 ${registers[0]}`)
+      program_counter -= 1
+      break
+    }
+    default: {
+      alert(`opcode ${OpcodeMap[fetched.opcode]} not implemented`)
+    }
+  }
+  return {
+    program_counter: program_counter + 1,
+    instruction_memory,
+    registers,
+  }
+}
+
 enum Opcode {
   Nop,
   Add,
   Eq,
-  Jeq,
+  Gt,
+  Jz,
   Jump,
-  Halt,
+  JumpBack,
   Load,
   Mov,
+  Halt,
 }
 
 const OpcodeMap = Object.keys(Opcode).slice(Object.keys(Opcode).length / 2)
@@ -40,6 +89,33 @@ function toBin(i: number, digits: number = 8) {
   return `${i.toString(2).padStart(digits, '0')}`
 }
 
+const fibProgram = [
+  // a0 = 1, a1 = 1, b = 15
+  new Instruction(Opcode.Load, 1),
+  new Instruction(Opcode.Mov, 0, 1),
+  new Instruction(Opcode.Mov, 0, 2),
+  new Instruction(Opcode.Load, 15),
+  new Instruction(Opcode.Mov, 0, 3),
+  // do a(n+2) = a(n+1) + a(n)
+  new Instruction(Opcode.Add, 1, 2),
+  // while a(n+2) < b
+  new Instruction(Opcode.Mov, 2, 1),
+  new Instruction(Opcode.Mov, 0, 2),
+  new Instruction(Opcode.Gt, 2, 3),
+  new Instruction(Opcode.Jz, 1),
+  new Instruction(Opcode.JumpBack, 6),
+  // return a(n+2)
+  new Instruction(Opcode.Mov, 2, 0),
+  new Instruction(Opcode.Halt, 0),
+]
+
+const simpleAddProgram = [
+  new Instruction(Opcode.Load, 3),
+  new Instruction(Opcode.Mov, 0, 1),
+  new Instruction(Opcode.Load, 5),
+  new Instruction(Opcode.Add, 0, 1),
+]
+
 export default class Computer0 extends Component<{}, Computer0State> {
   constructor(props: Readonly<{}>) {
     super(props)
@@ -49,40 +125,17 @@ export default class Computer0 extends Component<{}, Computer0State> {
       registers: Array(4).fill(0),
     }
 
-    this.state.instruction_memory[0] = new Instruction(Opcode.Load, 3)
-    this.state.instruction_memory[1] = new Instruction(Opcode.Mov, 0, 1)
-    this.state.instruction_memory[2] = new Instruction(Opcode.Load, 5)
-    this.state.instruction_memory[3] = new Instruction(Opcode.Add, 0, 1)
+    let program = fibProgram
+
+    this.state.instruction_memory.splice(0, program.length, ...program)
   }
   reset = () => {
     this.setState({
       program_counter: 0,
     })
   }
-  next = () => {
-    let fetched = this.state.instruction_memory[this.state.program_counter]
-    switch (fetched.opcode) {
-      case Opcode.Load: {
-        this.state.registers[0] = fetched.operand1
-        break
-      }
-      case Opcode.Mov: {
-        this.state.registers[fetched.operand2!] = this.state.registers[
-          fetched.operand1
-        ]
-        break
-      }
-      case Opcode.Add: {
-        this.state.registers[0] =
-          this.state.registers[fetched.operand1] +
-          this.state.registers[fetched.operand2!]
-        break
-      }
-    }
-    this.setState({
-      ...this.state,
-      program_counter: this.state.program_counter + 1,
-    })
+  step = () => {
+    this.setState(next(this.state))
   }
   render() {
     let { program_counter, instruction_memory, registers } = this.state
@@ -94,7 +147,7 @@ export default class Computer0 extends Component<{}, Computer0State> {
       <div style={{ position: 'relative' }}>
         <div id="controller">
           <button onClick={this.reset}>Reset</button>
-          <button onClick={this.next}>Next</button>
+          <button onClick={this.step}>Step</button>
         </div>
         <div className="program-counter rowbox1">
           PC : {toBin(this.state.program_counter)}
