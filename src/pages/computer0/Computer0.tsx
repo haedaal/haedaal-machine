@@ -189,8 +189,11 @@ export default class Computer0 extends Component<{}, Computer0State> {
         <div className="registers rowbox1">
           Registers
           {this.state.registers.map((r, idx) => (
-            <div key={idx} className="register">
-              R{idx} : {toBin(r)}
+            <div>
+              <div key={idx} className="register">
+                R{idx} : {toBin(r)}
+              </div>
+              <span className="hint">= {r}</span>
             </div>
           ))}
         </div>
