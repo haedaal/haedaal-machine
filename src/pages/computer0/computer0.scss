@@ -1,0 +1,50 @@
+.rowbox1 {
+  width: 180px;
+  margin-top: 10px;
+  padding: 10px;
+  border: solid 1px black;
+}
+
+.program-counter {
+}
+
+.fetched-instruction {
+}
+
+.instruction-memory {
+  position: absolute;
+  left: 230px;
+  top: 0;
+  width: 170px;
+  padding: 10px;
+  border: solid 1px black;
+  .active {
+    background: rgb(36, 224, 193);
+  }
+  .memory-cell {
+    transition: 0.8s;
+    padding: 2px;
+    index {
+    }
+    .value {
+      border-collapse: collapse;
+      position: absolute;
+      padding-left: 10px;
+      left: 35px;
+      width: 100px;
+    }
+  }
+}
+
+.registers {
+  .register {
+    display: inline-block;
+    width: 120px;
+    margin: 3px;
+    padding: 5px;
+    border: solid 1px blue;
+  }
+  .hint {
+    color: lightgray;
+  }
+}

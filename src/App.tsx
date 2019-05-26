@@ -11,17 +11,23 @@ class AppRouter extends Component {
         <div>
           <nav>
             <ul>
-              {pages.map(page => {
+              {pages.map((page, idx) => {
                 return (
-                  <li>
+                  <li key={idx}>
                     <Link to={'/' + page.name}>{page.name}</Link>
                   </li>
                 )
               })}
             </ul>
           </nav>
-          {pages.map(page => {
-            return <Route path={'/' + page.name + '/'} component={page.pagef} />
+          {pages.map((page, idx) => {
+            return (
+              <Route
+                key={idx}
+                path={'/' + page.name + '/'}
+                component={page.pagef}
+              />
+            )
           })}
         </div>
       </Router>
